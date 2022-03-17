@@ -28,7 +28,6 @@ fun Application.configureSecurity() {
                 call.response.status(HttpStatusCode.OK)
             } catch (e: Exception) {
                 call.response.status(HttpStatusCode(400, e.message.toString()))
-                return@post;
             }
         }
 
@@ -49,6 +48,26 @@ fun Application.configureSecurity() {
             } catch(e: Exception) {
                 call.response.status(HttpStatusCode(400, e.message.toString()))
             }
+        }
+
+        post("auth/logout") {
+            val token = call.request.cookies["token"].toString()
+            val user = Auth.getUserByToken(token)
+            if(user != null) {
+                Auth.removeSession(token)
+                call.response.status(HttpStatusCode.OK)
+            }
+            else
+                call.response.status(HttpStatusCode(400, "You are not logged in"))
+        }
+
+        get("/auth/check") {
+            val token = call.request.queryParameters["token"].toString()
+            val user = Auth.getUserByToken(token)
+            if(user != null)
+                call.respond(user)
+            else
+                call.response.status(HttpStatusCode(400, "You are not logged in"))
         }
     }
 }

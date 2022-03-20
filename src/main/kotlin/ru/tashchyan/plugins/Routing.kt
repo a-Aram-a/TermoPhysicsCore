@@ -92,7 +92,7 @@ fun Application.configureRouting() {
                         else -> {}
                     }
                 }
-                path = "pyscripts/" + Auth.generateToken() + ".py";
+                path = "scripts/" + Auth.generateToken() + ".py";
                 DbController.createFile(creatorID, name, description, path)
                 if(fileBytes.isNotEmpty())
                     File(path).writeBytes(fileBytes)

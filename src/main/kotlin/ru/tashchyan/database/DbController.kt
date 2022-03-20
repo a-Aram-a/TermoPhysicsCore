@@ -42,8 +42,9 @@ object DbController {
         while (result.next()) {
             val getUserID = result.getInt(1)
             val getLogin = result.getString(2)
+            val getPassword = result.getString(3)
             val getName = result.getString(4)
-            output = User(getUserID, getLogin, getName)
+            output = User(getUserID, getLogin, getPassword, getName)
         }
         connection.close()
         return output
@@ -60,10 +61,28 @@ object DbController {
         while (result.next()) {
             val getUserID = result.getInt(1)
             val getLogin = result.getString(2)
+            val getPassword = result.getString(3)
             val getName = result.getString(4)
-            output = User(getUserID, getLogin, getName)
+            output = User(getUserID, getLogin, getPassword, getName)
         }
         connection.close()
         return output
+    }
+
+    fun createFile(creatorID: Int, name: String, description: String, path: String)  {
+        if(!(name.length in 3..128))
+            throw Exception("Script name length should be from 3 to 128 characters")
+        if(!(description.length in 0..65535))
+            throw Exception("Script description length should be from 0 to 65535 characters")
+        Class.forName("com.mysql.cj.jdbc.Driver")
+        val connection = DriverManager.getConnection("jdbc:mysql://$dbhost/$dbname", dbuser, dbpass)
+        val insertAccountSql = "INSERT INTO Scripts (creatorID, name, description, path) VALUES (?, ?, ?, ?);"
+        val queryInsertAccount = connection.prepareStatement(insertAccountSql)
+        queryInsertAccount.setInt(1, creatorID)
+        queryInsertAccount.setString(2, name)
+        queryInsertAccount.setString(3, description)
+        queryInsertAccount.setString(4, path)
+        queryInsertAccount.execute()
+        connection.close()
     }
 }
